@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html ng-app="GameTracker">
+  <head>
+    <title>GameTracker</title>
+    <%= csrf_meta_tags %>
+
+    <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+
+    <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  </head>
+
+  <body>
+    <div class="container" ng-controller="MainCtrl">
+      <h3>Tracker</h3>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Game</th>
+            <th ng-repeat="(speciality, employees) in employeesBySpecialities">{{speciality}}</th>
+            <th>Store</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="game in games" ng-class="{'info': game.editable}">
+            <td>{{game.name}}</td>
+            <td ng-repeat="(speciality, specialities) in employeesBySpecialities">
+              <span ng-show="!game.editable">{{game.employees[speciality][0].name || '---'}}</span>
+
+              <select ng-show="game.editable"
+                      ng-options="spec as spec.name for spec in specialities track by spec.id"
+                      ng-model="game.employees[speciality][0]">
+                <option value="">None</option>
+              </select>
+            </td>
+            <td>{{game.store}}</td>
+            <td>
+              <i ng-if="!game.editable" class="glyphicon glyphicon-ok" ng-class="{'checked': game.status}"></i>
+              <input ng-if="game.editable" type="checkbox" ng-model="game.status" >
+            </td>
+            <td>
+              <button type="button" class="btn btn-primary" ng-click="toggleEdit(game)">
+                <i class="glyphicon" ng-class="{'glyphicon-floppy-saved': game.editable, 'glyphicon-pencil': !game.editable}"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="row">
+        <form class="form-inline" name="gameForm" ng-submit="createGame(gameForm)">
+          <div class="form-group">
+            <label>
+              <span>Game</span>
+              <input type="text" class="form-control" ng-model="game.name" name="name" placeholder="Please enter game name" required>
+            </label>
+          </div>
+          <div class="form-group">
+            <label>
+              <span>Store</span>
+              <input type="text" class="form-control" ng-model="game.store" name="store" placeholder="Please enter game store" required>
+            </label>
+          </div>
+          <button type="submit" class="btn btn-primary" ng-disabled="gameForm.$invalid">Add new game</button>
+        </form>
+        <div>
+
+          <div class="row">
+            <div class="col-md-12">
+              <h3>List of Employees</h3>
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Speciality</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tr class="employee" ng-repeat="employee in employees">
+                  <td>{{employee.name}}</td>
+                  <td>{{employee.speciality}}</td>
+                  <td>
+                    <button type="button" class="btn btn-danger" ng-click="deleteEmployee(employee)">
+                      <i class="glyphicon glyphicon-remove"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <form class="form-inline" name="employeeForm" ng-submit="createEmployee(employeeForm)">
+              <div class="form-group">
+                <label>
+                  <span>Name</span>
+                  <input type="text" class="form-control" ng-model="employee.name" name="name" placeholder="Please enter employee name" required>
+                </label>
+              </div>
+              <div class="form-group">
+                <label>
+                  <span>Speciality</span>
+                  <input type="text" class="form-control" ng-model="employee.speciality" name="speciality" placeholder="Please enter employee speciality" required>
+                </label>
+              </div>
+              <button type="submit" class="btn btn-primary" ng-disabled="employeeForm.$invalid">Save</button>
+            </form>
+          </div>
+
+        </div>
+      </div>
+    </body>
+  </html>

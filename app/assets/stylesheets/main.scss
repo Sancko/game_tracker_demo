@@ -1,0 +1,17 @@
+.glyphicon.glyphicon-ok {
+  opacity: 0.2;
+}
+
+.glyphicon.glyphicon-ok.checked {
+  opacity: 1;
+  color: green;
+}
+
+.employee .btn-danger {
+  opacity: 0;
+}
+
+
+.employee:hover .btn-danger {
+  opacity: 1;
+}
